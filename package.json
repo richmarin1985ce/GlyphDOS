@@ -1,0 +1,8 @@
+{
+  "name": "glyphdos",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Lightweight original DOS-inspired character-based game editor and runtime",
+  "scripts": {"test": "node tests/smoke.js"},
+  "license": "MIT"
+}

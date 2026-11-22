@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#09111e">
+<title>GlyphDOS — DOS-style Game Creation System</title>
+<style>
+:root{color-scheme:dark;--bg:#070c15;--panel:#0d1723;--panel2:#101d2c;--edge:#223247;--muted:#8196ae;--text:#dbe9ed;--cyan:#61dfd7;--amber:#f8ca77;--danger:#ff797f;--darkcyan:#102e35;--mono:'Cascadia Code','DejaVu Sans Mono',Consolas,'Courier New',monospace}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:13px/1.6 var(--mono)}body{background-image:linear-gradient(135deg,rgba(37,95,114,.08),transparent 40%)}button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit;border:1px solid var(--edge);background:#152538;transition:background .12s,border-color .12s}button:hover{border-color:var(--cyan);background:#203747}button:active{transform:translateY(1px)}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,canvas:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}button:disabled{opacity:.4;cursor:default}input,select,textarea{background:#070f1a;color:var(--text);border:1px solid var(--edge);border-radius:2px;padding:9px 10px;min-width:0;width:100%}textarea{resize:vertical}#app{max-width:1450px;margin:0 auto;padding:0 28px}.masthead{display:flex;align-items:center;justify-content:space-between;min-height:107px;padding:18px 0;border-bottom:1px solid var(--edge)}.brand{display:flex;gap:18px;align-items:center}.brand-mark{width:53px;height:53px;display:flex;align-items:center;justify-content:center;position:relative;border:1px solid var(--cyan);font-size:35px;font-weight:900;color:var(--cyan);box-shadow:inset 0 0 20px #1e637a40,0 0 20px #29cecf20;line-height:1}.brand-mark span{position:absolute;font-size:16px;right:6px;bottom:1px;color:var(--amber)}.eyebrow,.pane-kicker{font-size:10px;letter-spacing:2px;color:var(--muted)}h1{font-size:32px;letter-spacing:2px;margin:0;color:#e9f9f4;line-height:1.2;font-weight:800}h1 span{color:var(--cyan)}h1 small{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:1px}.header-right{display:flex;gap:12px;align-items:center;font-size:10px;letter-spacing:1px;color:#9eb2c3}.live-dot{width:7px;height:7px;background:var(--cyan);box-shadow:0 0 10px var(--cyan);border-radius:50%}.divider-dot{opacity:.3}.tabs{display:flex;gap:3px;align-items:center;min-height:69px;flex-wrap:wrap;padding:11px 0}.tab,.toolbutton{padding:10px 13px;background:none;border:1px solid transparent;color:#8ea5b6;font-size:11px;font-weight:700;white-space:nowrap;letter-spacing:.45px}.tab.active{color:var(--cyan);background:var(--darkcyan);border-color:#255a63}.tabspacer{flex:1}.toolbutton{border-color:var(--edge)}.toolbutton.primary,.accent{border-color:#286b72;color:var(--cyan);background:#13343c}.screen-layout{display:grid;grid-template-columns:minmax(0,1fr) 326px;gap:25px;align-items:start}.screen-column{min-width:0}.screen-header,.screen-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;background:#102130;border:1px solid #2a4961;letter-spacing:.7px;font-weight:700;font-size:11px}.screen-header{border-bottom:0}.screen-header .signal{color:var(--cyan);letter-spacing:-4px;padding-right:17px;font-size:16px}.screen-header i{font-size:9px;color:var(--muted);font-style:normal}.screen-footer{border-top:0;background:#0e1c2a;color:#9dbac9;font-size:10px;font-weight:400}.crt-wrap{background:#02040b;padding:12px;border-left:1px solid #2a4961;border-right:1px solid #2a4961;position:relative;overflow:hidden;box-shadow:0 7px 45px #0008}#screen{display:block;width:100%;height:auto;aspect-ratio:720 / 500;background:#05070e;image-rendering:pixelated;cursor:crosshair;touch-action:none}.scanlines{pointer-events:none;position:absolute;inset:12px;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,#0000000d 4px);opacity:.45}.player-controls{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 0 10px}.dpad{display:flex;flex-direction:column;align-items:center;gap:2px}.dpad-row{display:flex;gap:3px}.dpad button{width:35px;height:29px;background:#152334;color:var(--cyan);border-color:#2c4e60}.action-buttons{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.action-buttons button{font-size:10px;letter-spacing:.5px;padding:10px 12px}.stat-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr) 1.4fr;gap:0;background:var(--panel);border:1px solid var(--edge);margin:7px 0 14px}.stat-grid>div{padding:10px 12px;border-right:1px solid var(--edge)}.stat-grid>div:last-child{border-right:0}.stat-grid label{display:block;font-size:9px;letter-spacing:1px;color:var(--muted)}.stat-grid strong{color:var(--cyan);font-size:20px;font-weight:500}.meter{height:3px;margin-top:2px;background:#2c2837}.meter span{display:block;height:100%;background:var(--cyan)}.log-panel{border:1px solid var(--edge);background:var(--panel)}.panel-heading{border-bottom:1px solid var(--edge);padding:8px 13px;display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:10px;letter-spacing:1px;color:var(--cyan)}.subtle{background:none;border:0;font-size:9px;color:var(--muted)}#logEntries{height:103px;overflow:auto;padding:8px 13px;font-size:11px;color:#b3c8d5}#logEntries div{margin-bottom:2px}#logEntries div:before{content:'› ';color:var(--cyan)}.sidebar{background:var(--panel);border:1px solid var(--edge);min-height:660px}.pane{padding:22px 20px;min-height:650px}.pane[hidden]{display:none}.pane-kicker{color:var(--cyan)}h2{font-size:21px;letter-spacing:1.1px;line-height:1.25;margin:7px 0 16px}h3{font-size:11px;margin:18px 0 11px;color:var(--amber);letter-spacing:.7px}.pane p{font-size:11px;color:#a9b9c9;margin:0 0 14px}.pane ol{padding-left:19px;color:#b3c8d5}.pane li{margin:9px 0}.section-rule{border-top:1px solid var(--edge);margin:20px 0}.shortcut{display:flex;align-items:center;justify-content:space-between;gap:5px;margin:9px 0;font-size:10px;color:#a9bdce}.shortcut span{margin-right:auto}kbd{padding:3px 5px;background:#0b1522;border:1px solid #2b3d4c;font-size:9px;color:var(--cyan);white-space:nowrap}.objectives{font-size:11px;line-height:2;color:#a3b7c5}.objectives .done{color:var(--cyan)}.sidebar-bottom{display:grid;gap:9px;margin-top:25px}.wide{width:100%;padding:10px}.secondary{background:#101e2a;color:#a6b7c8}.field-label{display:block;font-size:9px;letter-spacing:.75px;color:#93b4c5;margin:15px 0 6px}.field-inline{display:flex;gap:5px}.field-inline button{flex:none;min-width:40px;padding:7px}.two-fields{display:grid;grid-template-columns:1fr 1fr;gap:9px}.button-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:15px}.button-grid button{padding:9px 4px;font-size:10px}.pane .hint{font-size:10px;color:#7e96a8;margin:14px 0;line-height:1.6}.swatch-row{display:flex;justify-content:space-between;align-items:center;margin-top:13px;color:var(--muted);font-size:9px;gap:12px}.swatch-row input{width:50px;height:29px;padding:2px}.small-row{display:flex;gap:12px;margin:8px 0}.small-row label{display:flex;align-items:center;gap:7px;font-size:10px;color:#98aabb}.small-row input{width:66px;padding:6px}.cp437-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;max-height:188px;overflow:auto;padding:4px;background:#07111c;border:1px solid var(--edge)}.cp437-grid button{height:24px;padding:0;font-size:14px;min-width:0;color:#d5eaf1;background:#122336}.cp437-grid button:hover{background:#34616c}.pixel-editor{display:grid;grid-template-columns:repeat(8,19px);width:max-content;gap:2px;margin:14px auto;padding:6px;border:1px solid var(--edge);background:#030a14;touch-action:none}.pixel-editor button{width:19px;height:19px;border:1px solid #273d48;background:#0f2030;padding:0}.pixel-editor button.on{background:#63e4dc;border-color:#b0fff8}.selection{font-size:11px;padding:9px;background:#061321;border:1px dashed #2c5161;color:var(--cyan);margin:10px 0}.script-preview{padding:13px;background:#07121f;border:1px solid #213447;font-size:11px;color:#e1c680;line-height:1.4;overflow:auto}.footer{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;border-top:1px solid var(--edge);margin:26px 0 30px;padding-top:13px;font-size:9px;letter-spacing:.4px;color:#57768b}.footer b{color:var(--cyan)}@media(max-width:1120px){#app{padding:0 15px}.screen-layout{grid-template-columns:minmax(0,1fr) 290px;gap:12px}.sidebar{min-height:0}.pane{padding:17px 14px}.header-right{display:none}.tab{padding:9px 8px}}@media(max-width:790px){.screen-layout{grid-template-columns:1fr}.pane{min-height:0}.screen-layout .sidebar{order:2}.masthead{min-height:80px}.brand-mark{width:42px;height:42px}.brand{gap:12px}h1{font-size:25px}.eyebrow{font-size:8px}.tabs{gap:1px}.tab{font-size:9px;padding:9px 7px}.toolbutton{font-size:9px;padding:8px}.crt-wrap{padding:6px}.stat-grid>div{padding:7px}.stat-grid strong{font-size:16px}.stat-grid label{font-size:8px}.footer{font-size:8px}.screen-footer{font-size:9px}.cp437-grid{grid-template-columns:repeat(16,minmax(0,1fr))}}@media(max-width:420px){#app{padding:0 8px}.brand-mark{display:none}.eyebrow{letter-spacing:1px}.screen-header{font-size:9px}.screen-header i{display:none}.stat-grid strong{font-size:14px}.player-controls{flex-wrap:wrap}.action-buttons{justify-content:flex-start}.action-buttons button{padding:8px}.cp437-grid{grid-template-columns:repeat(12,minmax(0,1fr))}}
+[hidden]{display:none!important}
+
+</style>
+</head>
+<body>
+<div id="app">
+<header class="masthead">
+  <div class="brand">
+    <div class="brand-mark">▞<span>▚</span></div>
+    <div><div class="eyebrow">CHARACTER-BASED GAME CREATION SYSTEM</div><h1>GLYPH<span>DOS</span><small> // 0.1</small></h1></div>
+  </div>
+  <div class="header-right"><span class="live-dot"></span><span>WORLD STUDIO</span><span class="divider-dot">/</span><span>LOCAL · OFFLINE · OPEN SOURCE</span></div>
+</header>
+<nav class="tabs" aria-label="Mode tabs">
+  <button class="tab active" data-mode="play">▶ PLAY</button>
+  <button class="tab" data-mode="edit">▦ BOARD EDITOR</button>
+  <button class="tab" data-mode="glyphs">✣ GLYPH STUDIO</button>
+  <button class="tab" data-mode="script">⌘ OBJECT SCRIPT</button>
+  <button class="tab" data-mode="manual">? MANUAL</button>
+  <span class="tabspacer"></span>
+  <button id="importBtn" class="toolbutton" title="Import a .json world">↑ IMPORT</button>
+  <button id="exportBtn" class="toolbutton primary" title="Save the entire world">↓ EXPORT WORLD</button>
+  <input type="file" id="fileInput" accept=".json,application/json" hidden>
+</nav>
+<section class="screen-layout">
+ <main class="screen-column">
+  <div class="screen-header"><div><span class="signal">▰▰▰</span><span id="boardTitle">01 / TERMINAL APPROACH</span></div><span id="resolution">60 × 25 <i>GLYPH CELLS</i></span></div>
+  <div class="crt-wrap"><canvas id="screen" width="720" height="500" tabindex="0" aria-label="Game and world editor canvas"></canvas><div class="scanlines" aria-hidden="true"></div></div>
+  <div class="screen-footer"><span id="statusLeft">SYSTEM READY</span><span id="statusRight">X 05 · Y 05</span></div>
+  <div class="player-controls" id="playerControls"><div class="dpad">
+   <button data-direction="up" aria-label="Up">▲</button><div class="dpad-row"><button data-direction="left" aria-label="Left">◀</button><button data-direction="down" aria-label="Down">▼</button><button data-direction="right" aria-label="Right">▶</button></div>
+  </div><div class="action-buttons"><button id="interactBtn">E · USE</button><button id="shootBtn">SPACE · FIRE</button><button id="soundBtn">♪ SOUND ON</button></div></div>
+  <div class="stat-grid" id="statGrid">
+   <div><label>HEALTH</label><strong id="hpStat">100</strong><div class="meter"><span id="hpFill" style="width:100%"></span></div></div>
+   <div><label>AMMO</label><strong id="ammoStat">12</strong></div>
+   <div><label>KEYS</label><strong id="keysStat">0</strong></div>
+   <div><label>GEMS</label><strong id="gemsStat">0</strong></div>
+   <div><label>SCORE</label><strong id="scoreStat">000000</strong></div>
+  </div>
+  <section class="log-panel"><div class="panel-heading"><span>◉ EVENT LOG</span><button id="clearLogBtn" class="subtle">CLEAR</button></div><div id="logEntries" aria-live="polite"></div></section>
+ </main>
+ <aside class="sidebar">
+  <section class="pane" id="pane-play"><div class="pane-kicker">RUN MODE</div><h2>THE QUIET TERMINAL</h2><p>A two-board playable demonstration of the engine. Collect the key, unlock the partition, recover the power core, power the switch, and escape.</p>
+   <div class="section-rule"></div><h3>PLAYER CONTROLS</h3>
+   <div class="shortcut"><span>Move character</span><kbd>W A S D</kbd> <kbd>↑ ← ↓ →</kbd></div>
+   <div class="shortcut"><span>Interact / inspect</span><kbd>E</kbd></div><div class="shortcut"><span>Fire in facing direction</span><kbd>SPACE</kbd></div><div class="shortcut"><span>Edit world</span><kbd>TAB</kbd></div>
+   <div class="section-rule"></div><h3>DEMO OBJECTIVE</h3><div class="objectives" id="objectives"><div>□ Find the station key</div><div>□ Enter reactor sector</div><div>□ Activate the switch</div><div>□ Recover power core</div><div>□ Reach evacuation gate</div></div>
+   <div class="sidebar-bottom"><button class="wide secondary" id="resetBtn">↺ RESET DEMO WORLD</button><button class="wide secondary" id="screenshotBtn">▤ SCREENSHOT PNG</button></div>
+  </section>
+  <section class="pane" id="pane-edit" hidden><div class="pane-kicker">WORLD CONSTRUCTION</div><h2>BOARD EDITOR</h2>
+   <label class="field-label" for="boardSelect">ACTIVE BOARD</label><div class="field-inline"><select id="boardSelect"></select><button id="newBoardBtn" title="Create a board">＋</button></div>
+   <div class="two-fields"><div><label class="field-label" for="layerSelect">EDIT LAYER</label><select id="layerSelect"><option value="ground">Terrain</option><option value="overlay">Overlay</option><option value="entities">Objects</option></select></div><div><label class="field-label" for="paintType">BRUSH</label><select id="paintType"></select></div></div>
+   <label class="field-label" for="glyphInput">GLYPH OVERRIDE (UNICODE / @bank:slot)</label><div class="field-inline"><input id="glyphInput" type="text" maxlength="72" placeholder="Use tile default"><button id="resetGlyphBtn">↺</button></div>
+   <div class="two-fields"><div><label class="field-label" for="fgSelect">FOREGROUND</label><select id="fgSelect"></select></div><div><label class="field-label" for="bgSelect">BACKGROUND</label><select id="bgSelect"></select></div></div>
+   <div class="swatch-row"><span>PALETTE SLOT COLOR</span><input type="color" id="paletteColor" value="#ffffff" title="Edit selected foreground palette slot"></div>
+   <div class="section-rule"></div><div class="button-grid"><button id="undoBtn">↶ UNDO</button><button id="redoBtn">↷ REDO</button><button id="eraseBtn">⌫ ERASE</button><button id="spawnBtn">⊕ SET SPAWN</button></div>
+   <p class="hint">Click or drag to paint. Right-click erases. <strong>Shift-click</strong> samples a glyph. When editing an object, open Object Script to configure its behavior.</p>
+   <div class="section-rule"></div><h3>BOARD NAME</h3><input id="boardName" type="text" maxlength="80" placeholder="Board name"><div class="small-row"><label>Camera X <input id="cameraX" type="number" min="0" max="199" value="0"></label><label>Y <input id="cameraY" type="number" min="0" max="119" value="0"></label></div>
+  </section>
+  <section class="pane" id="pane-glyphs" hidden><div class="pane-kicker">NO 256-GLYPH CEILING</div><h2>GLYPH STUDIO</h2><p>Use the 256 DOS graphical CP437 characters, any supported Unicode character, or your own 8×12 bitmap glyphs.</p>
+   <label class="field-label" for="cpSearch">CP437 CHARACTER MAP (0–255)</label><input id="cpSearch" placeholder="Find hex or decimal code (e.g. 0xDB)"><div class="cp437-grid" id="cpGrid"></div>
+   <label class="field-label" for="unicodeInput">UNICODE CHARACTER</label><div class="field-inline"><input id="unicodeInput" type="text" placeholder="Try ⚙, 🜁, ⍟, or 漢"><button id="useUnicodeBtn">USE</button></div>
+   <div class="section-rule"></div><h3>BITMAP GLYPH LAB</h3><div class="two-fields"><div><label class="field-label" for="bankInput">BANK</label><input id="bankInput" value="default" maxlength="20"></div><div><label class="field-label" for="slotInput">SLOT 0–4095</label><input id="slotInput" type="number" min="0" max="4095" value="0"></div></div>
+   <div id="pixelEditor" class="pixel-editor" aria-label="8 by 12 pixel glyph editing grid"></div><div class="button-grid"><button id="loadGlyphBtn">LOAD SLOT</button><button id="saveGlyphBtn" class="accent">SAVE / USE</button><button id="clearGlyphBtn">CLEAR PIXELS</button><button id="glyphToBrushBtn">USE SLOT</button></div>
+   <p class="hint">Custom glyphs persist inside world JSON. Glyph banks can hold up to 4,096 slots each; current import limits total authored glyphs to 4,096.</p>
+  </section>
+  <section class="pane" id="pane-script" hidden><div class="pane-kicker">EVENT-DRIVEN AUTOMATION</div><h2>OBJECT SCRIPT</h2><p>Click any object on the board to inspect it. Scripts run in a sandboxed, bounded command interpreter—never as JavaScript.</p>
+   <div id="selectionStatus" class="selection">NO OBJECT SELECTED</div>
+   <label class="field-label" for="entityText">DISPLAY TEXT</label><input type="text" id="entityText" maxlength="1000" placeholder="NPC dialogue, sign text, portal name">
+   <label class="field-label" for="codeInput">GLYPHDOS SCRIPT</label><textarea id="codeInput" spellcheck="false" rows="13" placeholder=":touch&#10;say Hello, traveler!&#10;give gems 1&#10;end"></textarea>
+   <div class="two-fields"><div><label class="field-label" for="targetBoard">PORTAL TARGET BOARD</label><select id="targetBoard"></select></div><div><label class="field-label" for="targetCoords">TARGET X,Y</label><input id="targetCoords" value="3,3"></div></div>
+   <button id="saveScriptBtn" class="wide accent">SAVE OBJECT CONFIGURATION</button><button id="deleteEntityBtn" class="wide secondary">DELETE SELECTED OBJECT</button>
+   <div class="section-rule"></div><h3>QUICK SCRIPT EXAMPLE</h3><pre class="script-preview">:touch
+if flag power goto ready
+say Find the generator!
+end
+:ready
+say Access granted.
+give gems 1
+end</pre><p class="hint">Labels: :touch, :tick, :shot. Commands: say, set, clear, if, goto, give, take, counter, move, teleport, wait, play, damage, heal, win, end.</p>
+  </section>
+  <section class="pane" id="pane-manual" hidden><div class="pane-kicker">REFERENCE / V0.1</div><h2>QUICK MANUAL</h2><h3>THE CONCEPT</h3><p>Classic text-mode game creation evolved beyond the 80×25 VGA screen. GlyphDOS uses a software canvas so you can build boards of different sizes, mix Unicode with DOS characters, and script interactive objects.</p>
+   <h3>CREATE A GAME</h3><ol><li>Choose Board Editor and paint terrain, overlays, or objects.</li><li>Choose Glyph Studio to choose or draw characters.</li><li>Select an object and edit its :touch script.</li><li>Switch to Play to test your game.</li><li>Export your world JSON; import to continue editing.</li></ol>
+   <h3>CONTROLS</h3><p>WASD/arrows to move, E to interact, Space to shoot. In the editor, click/drag to paint and right-click to erase. Custom glyphs begin with <code>@bank:slot</code>.</p>
+   <h3>LIMITS</h3><p>Board maximum: 200×120; 128 boards/world; 500,000 cells/world; 4,096 authored bitmap glyphs/world. The current runtime uses one on-screen viewport of 60×25 tiles and a fixed-step ticker.</p>
+   <h3>INTEROPERABILITY</h3><p>This is an original engine inspired by ZZT and MegaZeux. Its scripting and JSON world file are <strong>not binary-compatible</strong> with .ZZT, .MZX, or Robotic programs.</p>
+  </section>
+ </aside>
+</section>
+<footer class="footer"><span>GLYPHDOS <b>0.1</b> · HTML5 CANVAS ENGINE · ZERO DEPENDENCIES</span><span>60×25 VIEWPORT / MULTI-BOARD WORLDS / CP437 + UNICODE + CUSTOM BITMAPS</span></footer>
+</div>
+<script>
+/* GlyphDOS glyph registry: original IBM PC graphical CP437 mapping + extensible Unicode/bitmap glyphs. */
+(function (G) {
+  'use strict';
+  const NS = (G.GlyphDOS = G.GlyphDOS || {});
+  NS.CP437 = [" ","☺","☻","♥","♦","♣","♠","•","◘","○","◙","♂","♀","♪","♫","☼","►","◄","↕","‼","¶","§","▬","↨","↑","↓","→","←","∟","↔","▲","▼"," ","!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?","@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_","`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","{","|","}","~","⌂","Ç","ü","é","â","ä","à","å","ç","ê","ë","è","ï","î","ì","Ä","Å","É","æ","Æ","ô","ö","ò","û","ù","ÿ","Ö","Ü","¢","£","¥","₧","ƒ","á","í","ó","ú","ñ","Ñ","ª","º","¿","⌐","¬","½","¼","¡","«","»","░","▒","▓","│","┤","╡","╢","╖","╕","╣","║","╗","╝","╜","╛","┐","└","┴","┬","├","─","┼","╞","╟","╚","╔","╩","╦","╠","═","╬","╧","╨","╤","╥","╙","╘","╒","╓","╫","╪","┘","┌","█","▄","▌","▐","▀","α","ß","Γ","π","Σ","σ","µ","τ","Φ","Θ","Ω","δ","∞","φ","ε","∩","≡","±","≥","≤","⌠","⌡","÷","≈","°","∙","·","√","ⁿ","²","■"," "];
+  NS.DEFAULT_PALETTE = ['#07090f','#254bc8','#31a368','#19a7bc','#b54751','#aa6ddd','#c69b43','#babdc7','#555b71','#6589ff','#72e8a5','#7ce9f1','#ff7e87','#e9a3ff','#fff29a','#ffffff'];
+  NS.fgColor = (n) => NS.DEFAULT_PALETTE[((Number(n)||0)%16+16)%16];
+  NS.validColor = (c, fallback='#ffffff') => /^#[0-9a-fA-F]{6}$/.test(c || '') ? c : fallback;
+  NS.safeGlyph = (glyph, fallback='?') => {
+    if (typeof glyph !== 'string' || !glyph || glyph.length > 72) return fallback;
+    if (/^@[a-z0-9_-]{1,20}:\d{1,4}$/i.test(glyph)) return glyph;
+    const code = glyph.codePointAt(0);
+    if (!code || (code >= 0xd800 && code <= 0xdfff)) return fallback;
+    return String.fromCodePoint(code);
+  };
+  NS.bitmapKey = (bank, slot) => '@' + bank + ':' + slot;
+  NS.emptyBitmap = () => Array(12).fill('00000000');
+})(globalThis);
+
+</script><script>
+/* All data objects are JSON: no executable world content is ever evaluated. */
+(function (G) {
+  'use strict';
+  const GD = G.GlyphDOS;
+  const TERRAIN = {
+    floor:    {name:'Floor',       glyph:'·', fg:8, bg:0, solid:false},
+    wall:     {name:'Wall',        glyph:'█', fg:8, bg:0, solid:true},
+    brick:    {name:'Brick',       glyph:'▓', fg:5, bg:0, solid:true},
+    metal:    {name:'Metal',       glyph:'▒', fg:7, bg:0, solid:true},
+    grass:    {name:'Grass',       glyph:'♣', fg:2, bg:0, solid:false},
+    water:    {name:'Water',       glyph:'≈', fg:9, bg:1, solid:true},
+    sand:     {name:'Sand',        glyph:'░', fg:14,bg:0, solid:false},
+    lava:     {name:'Lava',        glyph:'≈', fg:12,bg:4, solid:false, damage:2},
+    door:     {name:'Locked Door', glyph:'╬', fg:14,bg:4, solid:true},
+    glass:    {name:'Glass',       glyph:'▫', fg:11,bg:1, solid:true},
+    carpet:   {name:'Carpet',      glyph:'▪', fg:5, bg:0, solid:false},
+    ice:      {name:'Ice',         glyph:'◇', fg:11,bg:1, solid:false},
+    conveyor: {name:'Conveyor',    glyph:'»', fg:10,bg:0, solid:false}
+  };
+  const OBJECTS = {
+    key:       {name:'Key',        glyph:'⚿', fg:14,bg:0},
+    gem:       {name:'Gem',        glyph:'♦', fg:13,bg:0},
+    health:    {name:'Medkit',     glyph:'✚', fg:10,bg:0},
+    ammo:      {name:'Ammo',       glyph:'•', fg:15,bg:0},
+    torch:     {name:'Torch',      glyph:'¡', fg:14,bg:0},
+    core:      {name:'Power Core', glyph:'◉', fg:11,bg:0},
+    npc:       {name:'Robot',      glyph:'☻', fg:10,bg:0},
+    sign:      {name:'Sign',       glyph:'¶', fg:14,bg:0},
+    switch:    {name:'Switch',     glyph:'◙', fg:9, bg:0},
+    enemy:     {name:'Enemy',      glyph:'♠', fg:12,bg:0},
+    pushblock: {name:'Push Block', glyph:'■', fg:6, bg:0},
+    portal:    {name:'Portal',     glyph:'↕', fg:13,bg:0},
+    exit:      {name:'Exit',       glyph:'Ω', fg:14,bg:0}
+  };
+  GD.TERRAIN = TERRAIN;
+  GD.OBJECTS = OBJECTS;
+  GD.tile = (kind='floor', changes={}) => {
+    const def = TERRAIN[kind] || TERRAIN.floor;
+    return {kind: TERRAIN[kind] ? kind : 'floor', glyph:def.glyph, fg:def.fg, bg:def.bg, ...changes};
+  };
+  GD.object = (kind='npc', x=1, y=1, changes={}) => {
+    const def = OBJECTS[kind] || OBJECTS.npc;
+    return {id:'obj_'+Math.random().toString(36).slice(2,10), type:OBJECTS[kind]?kind:'npc', x, y,
+      glyph:def.glyph, fg:def.fg, bg:def.bg, code:'', text:'', targetBoard:'', targetX:2, targetY:2,
+      state:{}, ...changes};
+  };
+  GD.createBoard = (id='board', name='New Board', width=60, height=25) => {
+    width=Math.max(10,Math.min(200,Math.floor(width)));
+    height=Math.max(10,Math.min(120,Math.floor(height)));
+    const ground = Array.from({length:width*height}, () => GD.tile('floor'));
+    for(let y=0;y<height;y++) for(let x=0;x<width;x++) {
+      if(x===0||y===0||x===width-1||y===height-1) ground[y*width+x]=GD.tile('wall');
+    }
+    return {id,name,width,height,ground,overlay:Array(width*height).fill(null),entities:[],spawn:{x:3,y:3}};
+  };
+  GD.cellAt=(board,x,y)=> x<0||y<0||x>=board.width||y>=board.height ? -1 : y*board.width+x;
+  GD.getBoard=(world,id)=>world.boards.find(b=>b.id===id);
+  GD.entityAt=(board,x,y)=>board.entities.find(o=>o.x===x&&o.y===y);
+  GD.createWorld = () => ({format:'glyphdos-world',version:1,title:'Untitled World',author:'',
+    tickMs:180, palette:GD.DEFAULT_PALETTE.slice(), glyphBanks:{default:{}},
+    flags:{}, counters:{}, won:false,
+    player:{board:'board0',x:3,y:3,hp:100,ammo:12,torches:0,gems:0,keys:0,score:0,inventory:{}},
+    boards:[GD.createBoard('board0','Board One')], log:[]});
+
+  function put(board,x,y,kind,changes={}) {
+    const i=GD.cellAt(board,x,y); if(i>=0) board.ground[i]=GD.tile(kind,changes);
+  }
+  function wallLine(board,x1,y1,x2,y2,kind='wall') {
+    const steps=Math.max(Math.abs(x2-x1),Math.abs(y2-y1));
+    for(let i=0;i<=steps;i++) put(board,Math.round(x1+(x2-x1)*i/Math.max(1,steps)),Math.round(y1+(y2-y1)*i/Math.max(1,steps)),kind);
+  }
+  function label(board,x,y,text,color=11) {
+    [...text].forEach((glyph,i)=> {const idx=GD.cellAt(board,x+i,y);if(idx>=0)board.overlay[idx]={glyph,fg:color,bg:null};});
+  }
+  function add(board,kind,x,y,changes={}) {board.entities.push(GD.object(kind,x,y,changes));}
+
+  GD.sampleWorld = () => {
+    const w=GD.createWorld();
+    w.title='THE QUIET TERMINAL'; w.author='GlyphDOS demo';
+    w.player={board:'station',x:5,y:5,hp:100,ammo:12,torches:1,gems:0,keys:0,score:0,inventory:{}};
+    w.boards=[];
+    const b=GD.createBoard('station','01 / Terminal Approach',60,25);
+    b.spawn={x:5,y:5};
+    for(let y=2;y<23;y++) for(let x=2;x<58;x++) {
+      if ((x+y*7)%29===0) put(b,x,y,'metal');
+    }
+    wallLine(b,28,3,28,21,'brick'); put(b,28,12,'door');
+    wallLine(b,3,20,21,20,'metal'); wallLine(b,21,17,21,20,'metal');
+    wallLine(b,31,5,55,5,'metal');
+    for(let x=34;x<45;x++) put(b,x,18,'water');
+    for(let x=34;x<45;x++) put(b,x,19,'water');
+    label(b,5,2,'S T A T I O N   A U R O R A',11);
+    label(b,34,3,'REACTOR ACCESS →',14);
+    label(b,5,22,'PICK UP KEY  ⚿    OPEN DOOR  ╬',10);
+    label(b,35,22,'FIND POWER CORE  ◉',13);
+    add(b,'key',11,8);
+    add(b,'gem',15,6); add(b,'ammo',9,17);
+    add(b,'sign',7,12,{text:'The station was evacuated. A key opens the partition. The reactor is east.'});
+    add(b,'npc',17,14,{text:'', code:':touch\nsay ACCESS NODE: The reactor core is missing. Get the key, pass through the door, then enter the eastern portal.\nend'});
+    add(b,'portal',53,12,{targetBoard:'reactor',targetX:5,targetY:5,text:'Reactor sector'});
+    w.boards.push(b);
+
+    const r=GD.createBoard('reactor','02 / Reactor Chamber',60,25); r.spawn={x:5,y:5};
+    label(r,5,2,'R E A C T O R   C H A M B E R',11);
+    label(r,7,22,'POWER THE SWITCH, RETRIEVE THE CORE, EXIT.',14);
+    wallLine(r,20,3,20,18,'metal'); put(r,20,10,'floor');
+    wallLine(r,38,6,38,22,'brick'); put(r,38,14,'floor');
+    for(let y=6;y<=10;y++) for(let x=25;x<=30;x++) put(r,x,y,'carpet');
+    for(let x=41;x<54;x++) put(r,x,7,'lava');
+    for(let x=41;x<54;x++) put(r,x,8,'lava');
+    for(let x=40;x<53;x++) put(r,x,9,'sand');
+    add(r,'switch',28,8,{text:'REACTOR SWITCH: power routed.',code:':touch\nset reactor_online\nsay POWER RESTORED. Find the core to the southeast, then reach the exit.\nplay 523 0.12\nend'});
+    add(r,'core',46,16); add(r,'health',12,16); add(r,'gem',31,15);
+    add(r,'enemy',34,16,{state:{speed:4}}); add(r,'enemy',47,18,{state:{speed:5}});
+    add(r,'exit',52,20,{text:'Evacuation gate',code:':touch\nif flag reactor_online goto checkcore\nsay The exit has no power. Locate the switch.\nend\n:checkcore\nif flag have_core goto victory\nsay Evacuation requires the recovered power core.\nend\n:victory\nsay MISSION COMPLETE! The Quiet Terminal is safe.\nwin\nend'});
+    add(r,'portal',6,20,{targetBoard:'station',targetX:51,targetY:12,text:'Return to terminal'});
+    w.boards.push(r);
+    w.log=['Welcome to GlyphDOS. Collect the key (⚿), pass the locked door, and enter the reactor.'];
+    return w;
+  };
+
+  GD.validateWorld = (raw) => {
+    if(!raw||raw.format!=='glyphdos-world'||raw.version!==1||!Array.isArray(raw.boards)||!raw.boards.length||raw.boards.length>128) throw Error('Unsupported world format or board count.');
+    const w={...GD.createWorld(),...raw};
+    w.title=String(w.title||'Untitled').slice(0,120); w.author=String(w.author||'').slice(0,120);
+    w.tickMs=Math.max(70,Math.min(1000,Number(w.tickMs)||180));
+    w.flags=Object.fromEntries(Object.entries(w.flags||{}).slice(0,2048).filter(([k,v])=>/^[a-z0-9_-]{1,64}$/i.test(k)).map(([k,v])=>[k,Boolean(v)]));
+    w.counters=Object.fromEntries(Object.entries(w.counters||{}).slice(0,2048).filter(([k])=>/^[a-z0-9_-]{1,64}$/i.test(k)).map(([k,v])=>[k,Math.max(-999999,Math.min(999999,Number(v)||0))]));
+    w.palette=Array.isArray(w.palette)?w.palette.slice(0,16).map((c,i)=>GD.validColor(c,GD.DEFAULT_PALETTE[i])):GD.DEFAULT_PALETTE.slice();
+    while(w.palette.length<16)w.palette.push(GD.DEFAULT_PALETTE[w.palette.length]);
+    let glyphs=0; const banks={};
+    for(const [id,entries] of Object.entries(w.glyphBanks||{}).slice(0,32)) {
+      if(!/^[a-z0-9_-]{1,20}$/i.test(id)||typeof entries!=='object'||!entries) continue;
+      const clean={};
+      for(const [n,rows] of Object.entries(entries)) {
+        const slot=Number(n); if(glyphs>=4096||!Number.isInteger(slot)||slot<0||slot>4095)continue;
+        if(Array.isArray(rows)&&rows.length===12&&rows.every(row=>typeof row==='string'&&/^[01]{8}$/.test(row))){clean[slot]=rows.slice();glyphs++;}
+      }
+      banks[id]=clean;
+    }
+    w.glyphBanks=banks.default?banks:{default:{},...banks};
+    const ids=new Set();let sumCells=0;
+    w.boards=w.boards.map((board,i)=>{
+      if(!board||!Number.isInteger(board.width)||!Number.isInteger(board.height)||board.width<10||board.width>200||board.height<10||board.height>120)throw Error('Board sizes must be between 10×10 and 200×120.');
+      sumCells+=board.width*board.height; if(sumCells>500000)throw Error('World exceeds 500,000 cells.');
+      const size=board.width*board.height;
+      if(!Array.isArray(board.ground)||board.ground.length!==size)throw Error('A board has invalid terrain dimensions.');
+      const id=/^[a-z0-9_-]{1,40}$/i.test(board.id||'')?board.id:'board'+i;
+      if(ids.has(id))throw Error('Duplicate board IDs.');ids.add(id);
+      const cleanTile=t=>{
+        const kind=GD.TERRAIN[t?.kind]?t.kind:'floor';const base=GD.tile(kind);
+        return {...base,glyph:GD.safeGlyph(t?.glyph,base.glyph),fg:Number.isInteger(t?.fg)?Math.max(0,Math.min(15,t.fg)):base.fg,bg:Number.isInteger(t?.bg)?Math.max(0,Math.min(15,t.bg)):base.bg};
+      };
+      const entities=Array.isArray(board.entities)?board.entities.slice(0,4000):[];
+      return {id,name:String(board.name||id).slice(0,80),width:board.width,height:board.height,
+        ground:board.ground.map(cleanTile),
+        overlay:Array.from({length:size},(_,idx)=>{const x=board.overlay?.[idx];return x&&typeof x==='object'?{glyph:GD.safeGlyph(x.glyph,' '),fg:Number.isInteger(x.fg)?Math.max(0,Math.min(15,x.fg)):15,bg:Number.isInteger(x.bg)&&x.bg>=0&&x.bg<16?x.bg:null}:null;}),
+        spawn:{x:Math.max(1,Math.min(board.width-2,Number(board.spawn?.x)||3)),y:Math.max(1,Math.min(board.height-2,Number(board.spawn?.y)||3))},
+        entities:entities.filter(e=>e&&GD.OBJECTS[e.type]&&Number.isInteger(e.x)&&Number.isInteger(e.y)&&e.x>=0&&e.y>=0&&e.x<board.width&&e.y<board.height).map((e,n)=>{
+          const base=GD.object(e.type,e.x,e.y);
+          return {...base,id:String(e.id||'entity_'+n).slice(0,64),glyph:GD.safeGlyph(e.glyph,base.glyph),fg:Number.isInteger(e.fg)?Math.max(0,Math.min(15,e.fg)):base.fg,bg:Number.isInteger(e.bg)?Math.max(0,Math.min(15,e.bg)):base.bg,code:String(e.code||'').slice(0,8000),text:String(e.text||'').slice(0,1000),targetBoard:String(e.targetBoard||'').slice(0,40),targetX:Math.trunc(Number(e.targetX)||2),targetY:Math.trunc(Number(e.targetY)||2),state:{...e.state}};})};
+    });
+    w.player={...GD.createWorld().player,...w.player};
+    if(!ids.has(w.player.board)) w.player.board=w.boards[0].id;
+    const b=GD.getBoard(w,w.player.board);
+    w.player.x=Math.max(1,Math.min(b.width-2,Number(w.player.x)||3));
+    w.player.y=Math.max(1,Math.min(b.height-2,Number(w.player.y)||3));
+    for(const key of ['hp','ammo','torches','gems','keys','score'])w.player[key]=Math.max(0,Math.min(999999,Math.trunc(Number(w.player[key])||0)));
+    w.player.inventory=(w.player.inventory&&typeof w.player.inventory==='object')?w.player.inventory:{};
+    w.log=Array.isArray(w.log)?w.log.slice(-40).map(t=>String(t).slice(0,350)):[];
+    w.won=Boolean(w.won);
+    return w;
+  };
+})(globalThis);
+
+</script><script>
+/* Deterministic tick-based game engine. Deliberately not a ZZT-OOP/Robotic compatibility interpreter. */
+(function (G) {
+  'use strict';
+  const GD=G.GlyphDOS;
+  class Engine {
+    constructor(world,notify=()=>{},sound=()=>{}) {
+      this.world=GD.validateWorld(world);this.notify=notify;this.sound=sound;
+      this.ticks=0;this.facing={dx:1,dy:0};this.paused=false;
+    }
+    get player(){return this.world.player;}
+    get board(){return GD.getBoard(this.world,this.player.board);}
+    log(message){const text=String(message).slice(0,350);this.world.log.push(text);this.world.log=this.world.log.slice(-40);this.notify(text);}
+    tile(board,x,y){const i=GD.cellAt(board,x,y);return i<0?null:board.ground[i];}
+    isFree(board,x,y,exclude){
+      const tile=this.tile(board,x,y);
+      if(!tile||GD.TERRAIN[tile.kind]?.solid)return false;
+      return !board.entities.some(e=>e!==exclude&&e.x===x&&e.y===y&&['pushblock','npc','enemy','sign','switch'].includes(e.type));
+    }
+    move(dx,dy){
+      if(this.world.won||this.player.hp<=0)return false;
+      if(!Number.isInteger(dx)||!Number.isInteger(dy)||Math.abs(dx)+Math.abs(dy)!==1)return false;
+      this.facing={dx,dy};const b=this.board,p=this.player,x=p.x+dx,y=p.y+dy;
+      const tile=this.tile(b,x,y);if(!tile)return false;
+      if(tile.kind==='door') {
+        if(p.keys<=0){this.log('The door is locked. Find a key.');this.sound(130,.08);return false;}
+        p.keys--;b.ground[GD.cellAt(b,x,y)]=GD.tile('floor');this.log('Unlocked the door.');this.sound(550,.08);
+      } else if(GD.TERRAIN[tile.kind]?.solid){this.sound(140,.04);return false;}
+      const e=GD.entityAt(b,x,y);
+      if(e){
+        if(e.type==='pushblock') {
+          if(!this.isFree(b,x+dx,y+dy,e))return false;
+          e.x+=dx;e.y+=dy;this.sound(200,.06);
+        } else if(['npc','enemy','sign','switch'].includes(e.type)) {
+          if(e.type==='enemy') {this.damage(6,'An enemy struck you.');return false;}
+          if(e.type==='sign')this.log(e.text||'The sign is blank.');
+          else if(e.type==='switch'&&e.code)this.runScript(e,'touch');
+          else if(e.type==='switch'){this.world.flags.reactor_online=true;this.log(e.text||'Switch activated.');}
+          else if(!this.runScript(e,'touch'))this.log(e.text||'A robot hums quietly.');
+          return false;
+        }
+      }
+      p.x=x;p.y=y;
+      if(tile.damage)this.damage(tile.damage,'The terrain burns!');
+      if(e)this.touchPickup(e,b);
+      if(tile.kind==='conveyor')this.conveyorMove(b,x,y);
+      return true;
+    }
+    conveyorMove(b,x,y){
+      // One step, no recursion. A conveyor cannot force a portal or entity collision.
+      const x2=x+1,y2=y;
+      if(this.player.board===b.id&&this.isFree(b,x2,y2)&&!GD.entityAt(b,x2,y2))this.player.x=x2;
+    }
+    touchPickup(e,b){
+      const p=this.player;
+      const take=()=>{const idx=b.entities.findIndex(o=>o.id===e.id);if(idx!==-1)b.entities.splice(idx,1);};
+      switch(e.type){
+        case 'key':p.keys++;p.score+=25;this.log('Picked up a key.');take();break;
+        case 'gem':p.gems++;p.score+=100;this.log('Gem collected! +100 score.');take();break;
+        case 'ammo':p.ammo+=5;this.log('Collected 5 ammo.');take();break;
+        case 'torch':p.torches++;this.log('Picked up a torch.');take();break;
+        case 'health':p.hp=Math.min(100,p.hp+25);this.log('Medkit: +25 health.');take();break;
+        case 'core':p.inventory.core=(p.inventory.core||0)+1;this.world.flags.have_core=true;this.log('Recovered the power core!');take();break;
+        case 'portal':this.teleport(e.targetBoard,e.targetX,e.targetY);break;
+        case 'exit':if(!this.runScript(e,'touch')){
+          if(this.world.flags.reactor_online&&this.world.flags.have_core)this.win();
+          else this.log('The exit remains sealed.');
+        }break;
+        default:break;
+      }
+      this.sound(700,.06);
+    }
+    interact(){
+      const {dx,dy}=this.facing,b=this.board,e=GD.entityAt(b,this.player.x+dx,this.player.y+dy);
+      if(!e){this.log('There is nothing to interact with.');return;}
+      if(e.type==='sign')this.log(e.text||'A blank sign.');
+      else if(e.type==='npc'||e.type==='switch'||e.type==='exit') {
+        if(!this.runScript(e,'touch'))this.log(e.text||'...');
+      } else this.log(e.text||'You examine the '+(GD.OBJECTS[e.type]?.name||e.type)+'.');
+    }
+    damage(amount,message='Damage taken.'){
+      this.player.hp=Math.max(0,this.player.hp-Math.max(0,amount));this.log(message+' (-'+amount+' HP)');this.sound(120,.12);
+      if(this.player.hp<=0)this.log('GAME OVER. In Editor mode, use Reset Demo or import a saved world.');
+    }
+    teleport(id,x,y){
+      const board=GD.getBoard(this.world,id);if(!board){this.log('Portal target not configured.');return false;}
+      x=Number.isInteger(x)?x:board.spawn.x;y=Number.isInteger(y)?y:board.spawn.y;
+      if(!this.isFree(board,x,y)){x=board.spawn.x;y=board.spawn.y;}
+      this.player.board=id;this.player.x=x;this.player.y=y;
+      this.log('ENTERING: '+board.name);this.sound(400,.13);return true;
+    }
+    win(){this.world.won=true;this.player.score+=1000;this.log('★ VICTORY! WORLD COMPLETED. ★');this.sound(900,.3);}
+    shoot(){
+      if(this.world.won||this.player.hp<=0)return;
+      if(this.player.ammo<1){this.log('Out of ammo.');return;}
+      this.player.ammo--;this.sound(840,.035);
+      const b=this.board,dx=this.facing.dx,dy=this.facing.dy;
+      for(let n=1;n<=10;n++){
+        const x=this.player.x+dx*n,y=this.player.y+dy*n,t=this.tile(b,x,y);
+        if(!t||GD.TERRAIN[t.kind]?.solid)break;
+        const e=GD.entityAt(b,x,y);
+        if(!e)continue;
+        if(e.type==='enemy'){
+          e.state.hp=(Number(e.state.hp)||1)-1;
+          if(e.state.hp<=0){b.entities=b.entities.filter(o=>o!==e);this.player.score+=50;this.log('Enemy destroyed. +50 points.');}
+          else this.log('Enemy hit.');return;
+        }
+        if(this.runScript(e,'shot'))return;
+        if(['pushblock','npc','sign','switch'].includes(e.type))return;
+      }
+    }
+    tick(){
+      if(this.paused||this.world.won||this.player.hp<=0)return;
+      this.ticks++;
+      const b=this.board;
+      // Iterate a snapshot so scripts can change entities or boards without invalidating iteration.
+      for(const e of [...b.entities]){
+        if(e.type==='npc'&&e.code.includes(':tick'))this.runScript(e,'tick');
+        if(e.type!=='enemy'||this.player.board!==b.id)continue;
+        const speed=Math.max(2,Math.min(15,Number(e.state.speed)||5));
+        if(this.ticks%speed!==0)continue;
+        const dx=this.player.x-e.x,dy=this.player.y-e.y;
+        if(Math.abs(dx)+Math.abs(dy)>10)continue;
+        const dirs=Math.abs(dx)>=Math.abs(dy)?[[Math.sign(dx),0],[0,Math.sign(dy)]]:[[0,Math.sign(dy)],[Math.sign(dx),0]];
+        for(const [sx,sy] of dirs){
+          if(sx===0&&sy===0)continue;
+          if(e.x+sx===this.player.x&&e.y+sy===this.player.y){this.damage(4,'The enemy attacks!');break;}
+          if(this.isFree(b,e.x+sx,e.y+sy,e)){e.x+=sx;e.y+=sy;break;}
+        }
+      }
+    }
+    runScript(entity,event){
+      if(!entity||!entity.code)return false;
+      const lines=entity.code.replace(/\r/g,'').split('\n').slice(0,800);
+      const labels={};for(let i=0;i<lines.length;i++){
+        const ln=lines[i].trim();if(/^:[a-z0-9_-]+$/i.test(ln)) labels[ln.slice(1).toLowerCase()]=i;
+      }
+      const entry=labels[String(event).toLowerCase()];if(entry===undefined)return false;
+      entity.state=entity.state||{};
+      if(event==='tick'&&entity.state.wait>0){entity.state.wait--;return true;}
+      let pc=entry+1,executed=0;
+      while(pc<lines.length&&executed++<100){
+        const line=lines[pc++].trim();
+        if(!line||line.startsWith(';')||line.startsWith('//'))continue;
+        if(line.startsWith(':'))break; // stop at the next event label, unless goto was used
+        const [command,...args]=line.split(/\s+/);const op=command.toLowerCase();
+        const rest=line.slice(command.length).trim();
+        switch(op){
+          case 'say':this.log(rest);break;
+          case 'set':if(/^[a-z0-9_-]{1,64}$/i.test(args[0]||''))this.world.flags[args[0]]=true;break;
+          case 'clear':if(/^[a-z0-9_-]{1,64}$/i.test(args[0]||''))this.world.flags[args[0]]=false;break;
+          case 'give':this.modifyStat(args[0],Number(args[1])||1);break;
+          case 'take':this.modifyStat(args[0],-(Number(args[1])||1));break;
+          case 'counter':if(/^[a-z0-9_-]{1,64}$/i.test(args[0]||''))this.world.counters[args[0]]=(Number(this.world.counters[args[0]])||0)+(Number(args[1])||1);break;
+          case 'goto':if(labels[String(args[0]).toLowerCase()]!==undefined)pc=labels[String(args[0]).toLowerCase()]+1;break;
+          case 'if':{
+            let ok=false;const kind=(args[0]||'').toLowerCase();
+            if(kind==='flag')ok=!!this.world.flags[args[1]];
+            else if(kind==='notflag')ok=!this.world.flags[args[1]];
+            else if(kind==='has')ok=(Number(this.player[args[1]])||Number(this.player.inventory[args[1]])||0)>=(Number(args[2])||1);
+            else if(kind==='counter')ok=(Number(this.world.counters[args[1]])||0)>=(Number(args[2])||0);
+            const idx=args.findIndex(a=>a.toLowerCase()==='goto');
+            if(ok&&idx>=0&&labels[String(args[idx+1]).toLowerCase()]!==undefined)pc=labels[String(args[idx+1]).toLowerCase()]+1;
+            break;
+          }
+          case 'teleport':this.teleport(args[0],Number(args[1]),Number(args[2]));break;
+          case 'move':{
+            const dd={north:[0,-1],south:[0,1],east:[1,0],west:[-1,0]}[String(args[0]).toLowerCase()];
+            if(dd&&this.isFree(this.board,entity.x+dd[0],entity.y+dd[1],entity)) {entity.x+=dd[0];entity.y+=dd[1];}break;
+          }
+          case 'wait':entity.state.wait=Math.max(0,Math.min(100,Number(args[0])||1));return true;
+          case 'play':this.sound(Math.max(80,Math.min(1600,Number(args[0])||440)),Math.max(.01,Math.min(.5,Number(args[1])||.08)));break;
+          case 'damage':this.damage(Math.max(0,Math.min(100,Number(args[0])||1)),'Scripted damage.');break;
+          case 'heal':this.player.hp=Math.min(100,this.player.hp+Math.max(0,Math.min(100,Number(args[0])||1)));break;
+          case 'win':this.win();return true;
+          case 'end':return true;
+          default:this.log('Script command not recognized: '+op);return true;
+        }
+        if(this.player.hp<=0||this.world.won)return true;
+      }
+      if(executed>=100)this.log('Script stopped: 100-instruction safety limit.');
+      return true;
+    }
+    modifyStat(name,amount){
+      if(!Number.isFinite(amount))return;
+      if(['hp','ammo','torches','gems','keys','score'].includes(name)) {
+        this.player[name]=Math.max(0,Math.min(name==='hp'?100:999999,this.player[name]+amount));
+      } else if(/^[a-z0-9_-]{1,64}$/i.test(name||'')) {
+        this.player.inventory[name]=Math.max(0,Math.min(999999,(Number(this.player.inventory[name])||0)+amount));
+      }
+    }
+  }
+  GD.Engine=Engine;
+})(globalThis);
+
+</script><script>
+/* GlyphDOS application: canvas renderer, tile painter, script editor, glyph lab, IO. */
+(function (G) {
+'use strict';
+const GD=G.GlyphDOS,$=(s)=>document.querySelector(s),$$=(s)=>[...document.querySelectorAll(s)];
+const VIEW_W=60,VIEW_H=25,CELL_W=12,CELL_H=20;
+let engine,mode='play',editBoardId='',selectedId=null,layer='ground',paintType='floor',glyphOverride='',
+  fg=11,bg=0,paintErase=false,paintSpawn=false,cameraX=0,cameraY=0,mouseDown=false,
+  undo=[],redo=[],pixelRows=GD.emptyBitmap(),pixelBrushOn=true,muted=false,audio=null;
+const canvas=$('#screen'),ctx=canvas.getContext('2d',{alpha:false});
+ctx.imageSmoothingEnabled=false;
+
+function beep(freq=440,duration=.08){
+ if(muted)return;
+ try{
+   audio=audio||new (window.AudioContext||window.webkitAudioContext)();
+   if(audio.state==='suspended')audio.resume();
+   const osc=audio.createOscillator(),gain=audio.createGain(),now=audio.currentTime;
+   osc.type='square';osc.frequency.setValueAtTime(Math.max(80,Math.min(1600,freq)),now);
+   gain.gain.setValueAtTime(.025,now);gain.gain.exponentialRampToValueAtTime(.0001,now+Math.max(.01,duration));
+   osc.connect(gain);gain.connect(audio.destination);osc.start(now);osc.stop(now+Math.max(.01,duration));
+ }catch(_){/* playback is optional */}
+}
+function writeLog(){
+ const box=$('#logEntries');box.replaceChildren();
+ for(const text of engine.world.log.slice(-30)) {const div=document.createElement('div');div.textContent=text;box.append(div);}
+ box.scrollTop=box.scrollHeight;
+}
+function status(text){$('#statusLeft').textContent=String(text).slice(0,80).toUpperCase();}
+function onMessage(m){writeLog();status(m);refreshStats();draw();}
+function init(world){
+ engine=new GD.Engine(world,onMessage,beep);editBoardId=engine.player.board;
+ cameraX=0;cameraY=0;selectedId=null;undo=[];redo=[];
+ syncBoardSelect();syncTargetSelect();syncBrushes();syncSelection();refreshStats();writeLog();draw();
+ status('SYSTEM READY — '+engine.world.title);
+}
+function getShownBoard(){return mode==='play'?engine.board:(GD.getBoard(engine.world,editBoardId)||engine.board);}
+function getCamera(board){
+ if(mode==='play') {
+  return {x:Math.min(Math.max(0,engine.player.x-Math.floor(VIEW_W/2)),Math.max(0,board.width-VIEW_W)),
+          y:Math.min(Math.max(0,engine.player.y-Math.floor(VIEW_H/2)),Math.max(0,board.height-VIEW_H))};
+ }
+ return {x:Math.min(Math.max(0,cameraX),Math.max(0,board.width-VIEW_W)),
+         y:Math.min(Math.max(0,cameraY),Math.max(0,board.height-VIEW_H))};
+}
+function drawGlyph(glyph,color,x,y,world){
+ if(glyph===' '||glyph==='')return;
+ const match=/^@([a-z0-9_-]{1,20}):(\d{1,4})$/i.exec(glyph||'');
+ if(match){
+   const rows=world.glyphBanks?.[match[1]]?.[Number(match[2])];
+   if(!rows)return;
+   ctx.fillStyle=color;
+   for(let r=0;r<12;r++)for(let c=0;c<8;c++)if(rows[r][c]==='1'){
+      // 1.3 px per bitmap pixel, 1.4 y scale, centered in cell
+      ctx.fillRect(Math.floor(x+1+c*1.3),Math.floor(y+2+r*1.35),Math.ceil(1.3),Math.ceil(1.35));
+   }
+   return;
+ }
+ ctx.fillStyle=color;
+ ctx.font='bold 16px "DejaVu Sans Mono", "Cascadia Mono", Consolas, "Courier New", monospace';
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(glyph,x+CELL_W/2,y+CELL_H/2+.3,CELL_W);
+}
+function draw(){
+ if(!engine)return;
+ const b=getShownBoard();if(!b)return;
+ const cam=getCamera(b),p=engine.player,palette=engine.world.palette;
+ ctx.fillStyle='#050910';ctx.fillRect(0,0,canvas.width,canvas.height);
+ for(let vy=0;vy<VIEW_H;vy++)for(let vx=0;vx<VIEW_W;vx++){
+   const x=vx+cam.x,y=vy+cam.y,i=GD.cellAt(b,x,y);
+   if(i<0)continue;
+   const t=b.ground[i];const px=vx*CELL_W,py=vy*CELL_H;
+   ctx.fillStyle=palette[t.bg]||GD.DEFAULT_PALETTE[0];ctx.fillRect(px,py,CELL_W,CELL_H);
+   drawGlyph(t.glyph,palette[t.fg]||'#ffffff',px,py,engine.world);
+   const overlay=b.overlay[i];if(overlay){
+     if(overlay.bg!==null&&overlay.bg!==undefined){ctx.fillStyle=palette[overlay.bg]||'#000000';ctx.fillRect(px,py,CELL_W,CELL_H);}
+     drawGlyph(overlay.glyph,palette[overlay.fg]||'#ffffff',px,py,engine.world);
+   }
+ }
+ for(const entity of b.entities){
+   const vx=entity.x-cam.x,vy=entity.y-cam.y;
+   if(vx<0||vy<0||vx>=VIEW_W||vy>=VIEW_H)continue;
+   const px=vx*CELL_W,py=vy*CELL_H;
+   if(entity.bg!==null&&entity.bg!==undefined){ctx.fillStyle=palette[entity.bg]||palette[0];ctx.fillRect(px,py,CELL_W,CELL_H);}
+   drawGlyph(entity.glyph,palette[entity.fg]||'#ffffff',px,py,engine.world);
+   if(mode!=='play'&&selectedId===entity.id){ctx.strokeStyle='#fff29a';ctx.lineWidth=2;ctx.strokeRect(px+1,py+1,CELL_W-2,CELL_H-2);}
+ }
+ if(p.board===b.id){
+   const vx=p.x-cam.x,vy=p.y-cam.y;
+   if(vx>=0&&vy>=0&&vx<VIEW_W&&vy<VIEW_H){
+     const px=vx*CELL_W,py=vy*CELL_H;
+     ctx.fillStyle=palette[0];ctx.fillRect(px,py,CELL_W,CELL_H);
+     drawGlyph('☺',engine.world.won?'#fff29a':'#ffffff',px,py,engine.world);
+     if(mode!=='play'){ctx.strokeStyle='#6ae0da';ctx.strokeRect(px+.5,py+.5,CELL_W-1,CELL_H-1);}
+   }
+ }
+ if(mode!=='play'){
+   ctx.strokeStyle='rgba(90,169,177,.12)';ctx.lineWidth=.5;
+   for(let x=0;x<=VIEW_W;x++){ctx.beginPath();ctx.moveTo(x*CELL_W+.5,0);ctx.lineTo(x*CELL_W+.5,500);ctx.stroke();}
+   for(let y=0;y<=VIEW_H;y++){ctx.beginPath();ctx.moveTo(0,y*CELL_H+.5);ctx.lineTo(720,y*CELL_H+.5);ctx.stroke();}
+ }
+ $('#boardTitle').textContent=b.name.toUpperCase();$('#resolution').firstChild.textContent=b.width+' × '+b.height+' ';
+ $('#statusRight').textContent=(mode==='play'?'PLAYER':'CAM '+String(cam.x).padStart(2,'0')+','+String(cam.y).padStart(2,'0'))+' / X '+String(p.x).padStart(2,'0')+' · Y '+String(p.y).padStart(2,'0');
+}
+function refreshStats(){
+ const p=engine.player;
+ $('#hpStat').textContent=p.hp;$('#hpFill').style.width=p.hp+'%';
+ $('#hpFill').style.background=p.hp<25?'#ff797f':'#61dfd7';
+ $('#ammoStat').textContent=p.ammo;$('#keysStat').textContent=p.keys;
+ $('#gemsStat').textContent=p.gems;$('#scoreStat').textContent=String(p.score).padStart(6,'0');
+ const station=GD.getBoard(engine.world,'station');
+ const objectives=[
+  [p.keys>0||(station&&!station.ground.some(t=>t.kind==='door')),'Find the station key'],
+  [p.board==='reactor'||engine.world.flags.have_core,'Enter reactor sector'],
+  [!!engine.world.flags.reactor_online,'Activate the switch'],
+  [!!engine.world.flags.have_core,'Recover power core'],
+  [!!engine.world.won,'Reach evacuation gate']];
+ const container=$('#objectives');container.replaceChildren();
+ for(const [done,label] of objectives){const div=document.createElement('div');div.className=done?'done':'';div.textContent=(done?'☑':'□')+' '+label;container.append(div);}
+}
+function movePlayer(dx,dy){if(mode!=='play')return;engine.move(dx,dy);draw();refreshStats();writeLog();autosave();}
+function setMode(next){
+ mode=next;$$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===mode));
+ ['play','edit','glyphs','script','manual'].forEach(id=>$('#pane-'+id).hidden=(id!==mode));
+ $('#playerControls').hidden=mode!=='play';
+ $('#statGrid').hidden=mode!=='play';
+ if(mode==='script'){syncSelection();}
+ if(mode==='edit')syncBoardSelect();
+ status(mode==='play'?'PLAY MODE':'EDITOR / '+mode.toUpperCase());draw();canvas.focus();
+}
+function saveHistory(){undo.push(JSON.stringify(engine.world));if(undo.length>25)undo.shift();redo.length=0;}
+function restoreHistory(from,to){if(!from.length)return;to.push(JSON.stringify(engine.world));const state=from.pop();
+ const lastBoard=editBoardId;engine.world=GD.validateWorld(JSON.parse(state));
+ editBoardId=GD.getBoard(engine.world,lastBoard)?lastBoard:engine.player.board;
+ selectedId=null;syncBoardSelect();syncTargetSelect();syncSelection();writeLog();refreshStats();draw();autosave();
+}
+function autosave(){try{const serialized=JSON.stringify(engine.world);if(serialized.length<4000000)localStorage.setItem('glyphdos_autosave_v1',serialized);}catch(_){}}
+function selectOptions(el,items,value){
+ el.replaceChildren();for(const item of items){const option=document.createElement('option');option.value=String(item.value);option.textContent=item.text;el.append(option);}if(value!==undefined)el.value=String(value);
+}
+function syncBoardSelect(){
+ selectOptions($('#boardSelect'),engine.world.boards.map(b=>({value:b.id,text:b.name})),editBoardId);
+ const b=GD.getBoard(engine.world,editBoardId);if(b)$('#boardName').value=b.name;
+ $('#cameraX').value=cameraX;$('#cameraY').value=cameraY;
+}
+function syncTargetSelect(){
+ selectOptions($('#targetBoard'),[{value:'',text:'— None —'},...engine.world.boards.map(b=>({value:b.id,text:b.name}))],'');
+}
+function syncBrushes(){
+ const categories=layer==='entities'?GD.OBJECTS:GD.TERRAIN;
+ const list=layer==='overlay'?[{value:'text',text:'Text glyph / paint'}]:Object.entries(categories).map(([key,val])=>({value:key,text:val.name}));
+ if(!list.some(x=>x.value===paintType))paintType=list[0].value;
+ selectOptions($('#paintType'),list,paintType);
+ $('#glyphInput').value=glyphOverride;$('#layerSelect').value=layer;
+ const opts=engine.world.palette.map((hex,i)=>({value:i,text:String(i).padStart(2,'0')+'  '+hex}));
+ selectOptions($('#fgSelect'),opts,fg);selectOptions($('#bgSelect'),opts,bg);$('#paletteColor').value=engine.world.palette[fg];
+}
+function syncSelection(){
+ const b=getShownBoard(),e=b?.entities.find(o=>o.id===selectedId);
+ $('#selectionStatus').textContent=e?e.type.toUpperCase()+'  /  ('+e.x+','+e.y+')  /  ID: '+e.id:'NO OBJECT SELECTED';
+ $('#entityText').value=e?.text||'';$('#codeInput').value=e?.code||'';
+ $('#targetBoard').value=e?.targetBoard||'';$('#targetCoords').value=(e?.targetX??3)+','+(e?.targetY??3);
+ $('#saveScriptBtn').disabled=!e;$('#deleteEntityBtn').disabled=!e;
+}
+function coordFromEvent(ev){
+ const rect=canvas.getBoundingClientRect(),sx=(ev.clientX-rect.left)*canvas.width/rect.width,sy=(ev.clientY-rect.top)*canvas.height/rect.height;
+ const b=getShownBoard(),cam=getCamera(b);
+ return {x:Math.floor(sx/CELL_W)+cam.x,y:Math.floor(sy/CELL_H)+cam.y};
+}
+function applyPaint(x,y,erase=false,shift=false){
+ const b=getShownBoard(),i=GD.cellAt(b,x,y);if(i<0)return;
+ if(mode==='script'){const e=GD.entityAt(b,x,y);selectedId=e?.id||null;syncSelection();draw();return;}
+ if(mode!=='edit')return;
+ if(shift){
+  const e=GD.entityAt(b,x,y),t=b.ground[i];
+  glyphOverride=e?.glyph||b.overlay[i]?.glyph||t.glyph;
+  $('#glyphInput').value=glyphOverride;status('SAMPLED '+glyphOverride);return;
+ }
+ if(paintSpawn){engine.player.board=b.id;engine.player.x=x;engine.player.y=y;b.spawn={x,y};paintSpawn=false;status('PLAYER SPAWN SET TO '+x+','+y);refreshStats();return;}
+ if(layer==='ground'){
+  const base=GD.tile(erase?'floor':paintType);
+  b.ground[i]={...base,glyph:erase?base.glyph:(GD.safeGlyph(glyphOverride,base.glyph)),fg:erase?base.fg:fg,bg:erase?base.bg:bg};
+ } else if(layer==='overlay') {
+  b.overlay[i]=erase?null:{glyph:GD.safeGlyph(glyphOverride,'*'),fg,bg:null};
+ } else if(layer==='entities'){
+  b.entities=b.entities.filter(e=>e.x!==x||e.y!==y);
+  if(!erase){const base=GD.object(paintType,x,y,{fg,bg});base.glyph=GD.safeGlyph(glyphOverride,base.glyph);
+   if(base.type==='npc')base.code=':touch\nsay Hello, world!\nend';
+   if(base.type==='portal')base.text='An unconfigured portal.';
+   if(base.type==='switch')base.code=':touch\nset power\nsay Power enabled.\nend';
+   b.entities.push(base);selectedId=base.id;
+  }else selectedId=null;
+ }
+ syncSelection();draw();
+}
+function paintFromMouse(ev){
+ if(!mouseDown)return;
+ const {x,y}=coordFromEvent(ev);
+ if(!Number.isFinite(x)||!Number.isFinite(y))return;
+ applyPaint(x,y,paintErase,ev.shiftKey);
+}
+function makeCPGrid(filter=''){
+ const grid=$('#cpGrid');grid.replaceChildren();
+ let nums=GD.CP437.map((_,i)=>i);
+ const q=filter.trim().toLowerCase();
+ if(q){const n=q.startsWith('0x')?parseInt(q.slice(2),16):Number(q);if(Number.isInteger(n)&&n>=0&&n<256)nums=[n];else nums=nums.filter(i=>GD.CP437[i].toLowerCase().includes(q));}
+ for(const i of nums){const b=document.createElement('button');b.type='button';b.textContent=GD.CP437[i];b.title='CP437 '+i+' / 0x'+i.toString(16).padStart(2,'0').toUpperCase();
+   b.addEventListener('click',()=>{glyphOverride=GD.CP437[i];$('#glyphInput').value=glyphOverride;setMode('edit');status('BRUSH GLYPH = CP437 '+i);});grid.append(b);}
+}
+function pixelButtonRow(){
+ const area=$('#pixelEditor');area.replaceChildren();
+ for(let y=0;y<12;y++)for(let x=0;x<8;x++){
+  const b=document.createElement('button');b.type='button';b.className=pixelRows[y][x]==='1'?'on':'';
+  b.title='pixel '+x+','+y;b.dataset.x=x;b.dataset.y=y;
+  b.addEventListener('pointerdown',ev=>{ev.preventDefault();pixelBrushOn=pixelRows[y][x]!=='1';flipPixel(x,y,pixelBrushOn);});
+  b.addEventListener('pointerenter',ev=>{if(ev.buttons===1)flipPixel(x,y,pixelBrushOn);});
+  area.append(b);
+ }
+}
+function flipPixel(x,y,on){const bits=pixelRows[y].split('');bits[x]=on?'1':'0';pixelRows[y]=bits.join('');
+ const btn=$(`#pixelEditor button[data-x="${x}"][data-y="${y}"]`);if(btn)btn.classList.toggle('on',on);
+}
+function bankSlot(){let bank=$('#bankInput').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,20)||'default';
+ const slot=Math.max(0,Math.min(4095,Math.trunc(Number($('#slotInput').value)||0)));
+ $('#bankInput').value=bank;$('#slotInput').value=slot;return {bank,slot};
+}
+function download(name,contents,type){const blob=contents instanceof Blob?contents:new Blob([contents],{type});
+ const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function filename(){return (engine.world.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'world').slice(0,50);}
+
+// Tabs, global actions
+$$('.tab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
+$('#exportBtn').addEventListener('click',()=>{download(filename()+'.glyphworld.json',JSON.stringify(engine.world,null,2),'application/json');status('WORLD EXPORTED');});
+$('#importBtn').addEventListener('click',()=>$('#fileInput').click());
+$('#fileInput').addEventListener('change',async ev=>{const f=ev.target.files?.[0];if(!f)return;
+ try{if(f.size>12000000)throw Error('Maximum world import is 12 MB.');const world=JSON.parse(await f.text());init(world);setMode('play');autosave();status('LOADED '+f.name);}catch(err){alert('Import failed: '+err.message);}finally{ev.target.value='';}
+});
+$('#resetBtn').addEventListener('click',()=>{if(!confirm('Replace the current world with the original demo? Export any changes first.'))return;init(GD.sampleWorld());autosave();});
+$('#screenshotBtn').addEventListener('click',()=>canvas.toBlob(blob=>{if(blob)download(filename()+'-screen.png',blob,'image/png');}));
+$('#clearLogBtn').addEventListener('click',()=>{engine.world.log=[];writeLog();draw();});
+$('#interactBtn').addEventListener('click',()=>{engine.interact();draw();writeLog();autosave();});
+$('#shootBtn').addEventListener('click',()=>{engine.shoot();draw();refreshStats();autosave();});
+$('#soundBtn').addEventListener('click',()=>{muted=!muted;$('#soundBtn').textContent=muted?'♪ SOUND OFF':'♪ SOUND ON';if(!muted)beep(500,.09);});
+$$('[data-direction]').forEach(b=>b.addEventListener('click',()=>{const d={up:[0,-1],left:[-1,0],down:[0,1],right:[1,0]}[b.dataset.direction];movePlayer(...d);}));
+document.addEventListener('keydown',ev=>{
+ const active=document.activeElement;
+ if(active&&['INPUT','TEXTAREA','SELECT'].includes(active.tagName))return;
+ if(ev.ctrlKey&&(ev.key.toLowerCase()==='s')){ev.preventDefault();$('#exportBtn').click();return;}
+ if(ev.key==='Tab'){ev.preventDefault();setMode(mode==='play'?'edit':'play');return;}
+ if(ev.key==='F1'){ev.preventDefault();setMode('manual');return;}
+ if(mode==='edit'&&(ev.ctrlKey||ev.metaKey)&&ev.key.toLowerCase()==='z'){ev.preventDefault();restoreHistory(undo,redo);return;}
+ if(mode==='edit'&&(ev.ctrlKey||ev.metaKey)&&ev.key.toLowerCase()==='y'){ev.preventDefault();restoreHistory(redo,undo);return;}
+ const d={ArrowUp:[0,-1],ArrowLeft:[-1,0],ArrowDown:[0,1],ArrowRight:[1,0],w:[0,-1],a:[-1,0],s:[0,1],d:[1,0]}[ev.key];
+ if(d){ev.preventDefault();if(mode==='play')movePlayer(...d);else if(mode!=='manual'){
+   cameraX=Math.max(0,cameraX+d[0]);cameraY=Math.max(0,cameraY+d[1]);
+   $('#cameraX').value=cameraX;$('#cameraY').value=cameraY;draw();
+ }return;}
+ if(mode==='play'&&ev.key.toLowerCase()==='e'){ev.preventDefault();engine.interact();draw();autosave();return;}
+ if(mode==='play'&&ev.code==='Space'){ev.preventDefault();engine.shoot();draw();refreshStats();autosave();return;}
+});
+canvas.addEventListener('contextmenu',ev=>ev.preventDefault());
+canvas.addEventListener('pointerdown',ev=>{
+ if(mode==='play'){canvas.focus();return;}
+ ev.preventDefault();canvas.setPointerCapture(ev.pointerId);mouseDown=true;paintErase=ev.button===2;
+ if(mode==='edit'&&!ev.shiftKey)saveHistory();
+ paintFromMouse(ev);autosave();
+});
+canvas.addEventListener('pointermove',ev=>{if(mouseDown&&mode==='edit'){paintFromMouse(ev);autosave();}});
+canvas.addEventListener('pointerup',()=>{mouseDown=false;autosave();});
+canvas.addEventListener('pointercancel',()=>{mouseDown=false;});
+
+// Board editor
+$('#boardSelect').addEventListener('change',ev=>{editBoardId=ev.target.value;selectedId=null;cameraX=0;cameraY=0;syncBoardSelect();syncSelection();draw();});
+$('#newBoardBtn').addEventListener('click',()=>{
+ const name=prompt('Name the new board:','Untitled Board');if(name===null)return;
+ const size=prompt('Board dimensions (width,height), maximum 200×120:','60,25');if(size===null)return;
+ const [w,h]=size.split(/[x,]/i).map(x=>Number(x.trim()));
+ if(!Number.isInteger(w)||!Number.isInteger(h)||w<10||h<10||w>200||h>120){alert('Dimensions must be between 10×10 and 200×120.');return;}
+ if(engine.world.boards.length>=128||engine.world.boards.reduce((n,b)=>n+b.width*b.height,0)+w*h>500000){alert('World board / cell capacity exceeded.');return;}
+ saveHistory();const id='board_'+Date.now().toString(36);const b=GD.createBoard(id,(name||id).slice(0,80),w,h);engine.world.boards.push(b);
+ editBoardId=id;cameraX=0;cameraY=0;syncBoardSelect();syncTargetSelect();draw();autosave();
+});
+$('#layerSelect').addEventListener('change',ev=>{layer=ev.target.value;paintType=layer==='entities'?'npc':layer==='overlay'?'text':'floor';syncBrushes();});
+$('#paintType').addEventListener('change',ev=>{paintType=ev.target.value;glyphOverride='';syncBrushes();});
+$('#glyphInput').addEventListener('input',ev=>{glyphOverride=ev.target.value;});
+$('#resetGlyphBtn').addEventListener('click',()=>{glyphOverride='';syncBrushes();});
+$('#fgSelect').addEventListener('change',ev=>{fg=Number(ev.target.value);$('#paletteColor').value=engine.world.palette[fg];});
+$('#bgSelect').addEventListener('change',ev=>{bg=Number(ev.target.value);});
+$('#paletteColor').addEventListener('change',ev=>{saveHistory();engine.world.palette[fg]=GD.validColor(ev.target.value,engine.world.palette[fg]);syncBrushes();draw();autosave();});
+$('#undoBtn').addEventListener('click',()=>restoreHistory(undo,redo));
+$('#redoBtn').addEventListener('click',()=>restoreHistory(redo,undo));
+$('#eraseBtn').addEventListener('click',()=>{paintErase=true;status('RIGHT-CLICK OR DRAG TO ERASE; ERASER ACTIVE ON NEXT CLICK');
+ // Make eraser an explicit one-click tool for touch devices.
+ const handler=(ev)=>{const {x,y}=coordFromEvent(ev);saveHistory();applyPaint(x,y,true);autosave();canvas.removeEventListener('pointerdown',handler,true);};
+ canvas.addEventListener('pointerdown',handler,{capture:true,once:true});
+});
+$('#spawnBtn').addEventListener('click',()=>{paintSpawn=true;status('CLICK A PASSABLE TILE TO SET PLAYER SPAWN');});
+$('#boardName').addEventListener('change',ev=>{const b=getShownBoard();if(!b)return;saveHistory();b.name=ev.target.value.trim().slice(0,80)||b.id;syncBoardSelect();draw();autosave();});
+for(const c of ['X','Y']){$('#camera'+c).addEventListener('change',ev=>{if(c==='X')cameraX=Math.max(0,Number(ev.target.value)||0);else cameraY=Math.max(0,Number(ev.target.value)||0);draw();});}
+
+// Object scripts
+$('#saveScriptBtn').addEventListener('click',()=>{
+ const b=getShownBoard(),e=b?.entities.find(o=>o.id===selectedId);if(!e)return;
+ saveHistory();e.text=$('#entityText').value.slice(0,1000);e.code=$('#codeInput').value.slice(0,8000);e.targetBoard=$('#targetBoard').value;
+ const [x,y]=$('#targetCoords').value.split(',').map(s=>Math.trunc(Number(s.trim())));
+ e.targetX=Number.isFinite(x)?x:2;e.targetY=Number.isFinite(y)?y:2;
+ status('OBJECT SCRIPT SAVED');autosave();
+});
+$('#deleteEntityBtn').addEventListener('click',()=>{
+ const b=getShownBoard();if(!b||!selectedId)return;saveHistory();b.entities=b.entities.filter(o=>o.id!==selectedId);selectedId=null;syncSelection();draw();autosave();
+});
+
+// Character map and bitmap lab
+$('#cpSearch').addEventListener('input',ev=>makeCPGrid(ev.target.value));
+$('#useUnicodeBtn').addEventListener('click',()=>{const glyph=GD.safeGlyph($('#unicodeInput').value,'');if(!glyph){alert('Enter one Unicode character.');return;}
+ glyphOverride=glyph;$('#glyphInput').value=glyph;setMode('edit');status('UNICODE GLYPH READY');
+});
+$('#loadGlyphBtn').addEventListener('click',()=>{const {bank,slot}=bankSlot();pixelRows=(engine.world.glyphBanks[bank]?.[slot]||GD.emptyBitmap()).slice();pixelButtonRow();status('CUSTOM GLYPH LOADED');});
+$('#saveGlyphBtn').addEventListener('click',()=>{
+ const {bank,slot}=bankSlot();saveHistory();engine.world.glyphBanks[bank]=engine.world.glyphBanks[bank]||{};
+ const used=Object.values(engine.world.glyphBanks).reduce((n,b)=>n+Object.keys(b).length,0);
+ if(used>=4096&&!engine.world.glyphBanks[bank][slot]){alert('World custom-glyph limit is 4,096.');undo.pop();return;}
+ engine.world.glyphBanks[bank][slot]=pixelRows.slice();glyphOverride=GD.bitmapKey(bank,slot);$('#glyphInput').value=glyphOverride;
+ autosave();setMode('edit');status('CUSTOM GLYPH SAVED / BRUSH SELECTED');
+});
+$('#clearGlyphBtn').addEventListener('click',()=>{pixelRows=GD.emptyBitmap();pixelButtonRow();});
+$('#glyphToBrushBtn').addEventListener('click',()=>{const {bank,slot}=bankSlot();glyphOverride=GD.bitmapKey(bank,slot);$('#glyphInput').value=glyphOverride;setMode('edit');status('CUSTOM GLYPH SELECTED');});
+
+makeCPGrid();pixelButtonRow();
+let initialWorld=GD.sampleWorld();
+try{const json=localStorage.getItem('glyphdos_autosave_v1');if(json&&json.length<4000000)initialWorld=GD.validateWorld(JSON.parse(json));}catch(_){/* private browsing or expired save */}
+init(initialWorld);setMode('play');
+setInterval(()=>{if(mode==='play'&&!document.hidden){engine.tick();refreshStats();draw();if(engine.ticks%55===0)autosave();}},180);
+window.GlyphDOSApp={getEngine:()=>engine,setMode,reset:()=>init(GD.sampleWorld())};
+})(globalThis);
+
+</script>
+</body></html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#09111e">
+<title>GlyphDOS — DOS-style Game Creation System</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+<header class="masthead">
+  <div class="brand">
+    <div class="brand-mark">▞<span>▚</span></div>
+    <div><div class="eyebrow">CHARACTER-BASED GAME CREATION SYSTEM</div><h1>GLYPH<span>DOS</span><small> // 0.1</small></h1></div>
+  </div>
+  <div class="header-right"><span class="live-dot"></span><span>WORLD STUDIO</span><span class="divider-dot">/</span><span>LOCAL · OFFLINE · OPEN SOURCE</span></div>
+</header>
+<nav class="tabs" aria-label="Mode tabs">
+  <button class="tab active" data-mode="play">▶ PLAY</button>
+  <button class="tab" data-mode="edit">▦ BOARD EDITOR</button>
+  <button class="tab" data-mode="glyphs">✣ GLYPH STUDIO</button>
+  <button class="tab" data-mode="script">⌘ OBJECT SCRIPT</button>
+  <button class="tab" data-mode="manual">? MANUAL</button>
+  <span class="tabspacer"></span>
+  <button id="importBtn" class="toolbutton" title="Import a .json world">↑ IMPORT</button>
+  <button id="exportBtn" class="toolbutton primary" title="Save the entire world">↓ EXPORT WORLD</button>
+  <input type="file" id="fileInput" accept=".json,application/json" hidden>
+</nav>
+<section class="screen-layout">
+ <main class="screen-column">
+  <div class="screen-header"><div><span class="signal">▰▰▰</span><span id="boardTitle">01 / TERMINAL APPROACH</span></div><span id="resolution">60 × 25 <i>GLYPH CELLS</i></span></div>
+  <div class="crt-wrap"><canvas id="screen" width="720" height="500" tabindex="0" aria-label="Game and world editor canvas"></canvas><div class="scanlines" aria-hidden="true"></div></div>
+  <div class="screen-footer"><span id="statusLeft">SYSTEM READY</span><span id="statusRight">X 05 · Y 05</span></div>
+  <div class="player-controls" id="playerControls"><div class="dpad">
+   <button data-direction="up" aria-label="Up">▲</button><div class="dpad-row"><button data-direction="left" aria-label="Left">◀</button><button data-direction="down" aria-label="Down">▼</button><button data-direction="right" aria-label="Right">▶</button></div>
+  </div><div class="action-buttons"><button id="interactBtn">E · USE</button><button id="shootBtn">SPACE · FIRE</button><button id="soundBtn">♪ SOUND ON</button></div></div>
+  <div class="stat-grid" id="statGrid">
+   <div><label>HEALTH</label><strong id="hpStat">100</strong><div class="meter"><span id="hpFill" style="width:100%"></span></div></div>
+   <div><label>AMMO</label><strong id="ammoStat">12</strong></div>
+   <div><label>KEYS</label><strong id="keysStat">0</strong></div>
+   <div><label>GEMS</label><strong id="gemsStat">0</strong></div>
+   <div><label>SCORE</label><strong id="scoreStat">000000</strong></div>
+  </div>
+  <section class="log-panel"><div class="panel-heading"><span>◉ EVENT LOG</span><button id="clearLogBtn" class="subtle">CLEAR</button></div><div id="logEntries" aria-live="polite"></div></section>
+ </main>
+ <aside class="sidebar">
+  <section class="pane" id="pane-play"><div class="pane-kicker">RUN MODE</div><h2>THE QUIET TERMINAL</h2><p>A two-board playable demonstration of the engine. Collect the key, unlock the partition, recover the power core, power the switch, and escape.</p>
+   <div class="section-rule"></div><h3>PLAYER CONTROLS</h3>
+   <div class="shortcut"><span>Move character</span><kbd>W A S D</kbd> <kbd>↑ ← ↓ →</kbd></div>
+   <div class="shortcut"><span>Interact / inspect</span><kbd>E</kbd></div><div class="shortcut"><span>Fire in facing direction</span><kbd>SPACE</kbd></div><div class="shortcut"><span>Edit world</span><kbd>TAB</kbd></div>
+   <div class="section-rule"></div><h3>DEMO OBJECTIVE</h3><div class="objectives" id="objectives"><div>□ Find the station key</div><div>□ Enter reactor sector</div><div>□ Activate the switch</div><div>□ Recover power core</div><div>□ Reach evacuation gate</div></div>
+   <div class="sidebar-bottom"><button class="wide secondary" id="resetBtn">↺ RESET DEMO WORLD</button><button class="wide secondary" id="screenshotBtn">▤ SCREENSHOT PNG</button></div>
+  </section>
+  <section class="pane" id="pane-edit" hidden><div class="pane-kicker">WORLD CONSTRUCTION</div><h2>BOARD EDITOR</h2>
+   <label class="field-label" for="boardSelect">ACTIVE BOARD</label><div class="field-inline"><select id="boardSelect"></select><button id="newBoardBtn" title="Create a board">＋</button></div>
+   <div class="two-fields"><div><label class="field-label" for="layerSelect">EDIT LAYER</label><select id="layerSelect"><option value="ground">Terrain</option><option value="overlay">Overlay</option><option value="entities">Objects</option></select></div><div><label class="field-label" for="paintType">BRUSH</label><select id="paintType"></select></div></div>
+   <label class="field-label" for="glyphInput">GLYPH OVERRIDE (UNICODE / @bank:slot)</label><div class="field-inline"><input id="glyphInput" type="text" maxlength="72" placeholder="Use tile default"><button id="resetGlyphBtn">↺</button></div>
+   <div class="two-fields"><div><label class="field-label" for="fgSelect">FOREGROUND</label><select id="fgSelect"></select></div><div><label class="field-label" for="bgSelect">BACKGROUND</label><select id="bgSelect"></select></div></div>
+   <div class="swatch-row"><span>PALETTE SLOT COLOR</span><input type="color" id="paletteColor" value="#ffffff" title="Edit selected foreground palette slot"></div>
+   <div class="section-rule"></div><div class="button-grid"><button id="undoBtn">↶ UNDO</button><button id="redoBtn">↷ REDO</button><button id="eraseBtn">⌫ ERASE</button><button id="spawnBtn">⊕ SET SPAWN</button></div>
+   <p class="hint">Click or drag to paint. Right-click erases. <strong>Shift-click</strong> samples a glyph. When editing an object, open Object Script to configure its behavior.</p>
+   <div class="section-rule"></div><h3>BOARD NAME</h3><input id="boardName" type="text" maxlength="80" placeholder="Board name"><div class="small-row"><label>Camera X <input id="cameraX" type="number" min="0" max="199" value="0"></label><label>Y <input id="cameraY" type="number" min="0" max="119" value="0"></label></div>
+  </section>
+  <section class="pane" id="pane-glyphs" hidden><div class="pane-kicker">NO 256-GLYPH CEILING</div><h2>GLYPH STUDIO</h2><p>Use the 256 DOS graphical CP437 characters, any supported Unicode character, or your own 8×12 bitmap glyphs.</p>
+   <label class="field-label" for="cpSearch">CP437 CHARACTER MAP (0–255)</label><input id="cpSearch" placeholder="Find hex or decimal code (e.g. 0xDB)"><div class="cp437-grid" id="cpGrid"></div>
+   <label class="field-label" for="unicodeInput">UNICODE CHARACTER</label><div class="field-inline"><input id="unicodeInput" type="text" placeholder="Try ⚙, 🜁, ⍟, or 漢"><button id="useUnicodeBtn">USE</button></div>
+   <div class="section-rule"></div><h3>BITMAP GLYPH LAB</h3><div class="two-fields"><div><label class="field-label" for="bankInput">BANK</label><input id="bankInput" value="default" maxlength="20"></div><div><label class="field-label" for="slotInput">SLOT 0–4095</label><input id="slotInput" type="number" min="0" max="4095" value="0"></div></div>
+   <div id="pixelEditor" class="pixel-editor" aria-label="8 by 12 pixel glyph editing grid"></div><div class="button-grid"><button id="loadGlyphBtn">LOAD SLOT</button><button id="saveGlyphBtn" class="accent">SAVE / USE</button><button id="clearGlyphBtn">CLEAR PIXELS</button><button id="glyphToBrushBtn">USE SLOT</button></div>
+   <p class="hint">Custom glyphs persist inside world JSON. Glyph banks can hold up to 4,096 slots each; current import limits total authored glyphs to 4,096.</p>
+  </section>
+  <section class="pane" id="pane-script" hidden><div class="pane-kicker">EVENT-DRIVEN AUTOMATION</div><h2>OBJECT SCRIPT</h2><p>Click any object on the board to inspect it. Scripts run in a sandboxed, bounded command interpreter—never as JavaScript.</p>
+   <div id="selectionStatus" class="selection">NO OBJECT SELECTED</div>
+   <label class="field-label" for="entityText">DISPLAY TEXT</label><input type="text" id="entityText" maxlength="1000" placeholder="NPC dialogue, sign text, portal name">
+   <label class="field-label" for="codeInput">GLYPHDOS SCRIPT</label><textarea id="codeInput" spellcheck="false" rows="13" placeholder=":touch&#10;say Hello, traveler!&#10;give gems 1&#10;end"></textarea>
+   <div class="two-fields"><div><label class="field-label" for="targetBoard">PORTAL TARGET BOARD</label><select id="targetBoard"></select></div><div><label class="field-label" for="targetCoords">TARGET X,Y</label><input id="targetCoords" value="3,3"></div></div>
+   <button id="saveScriptBtn" class="wide accent">SAVE OBJECT CONFIGURATION</button><button id="deleteEntityBtn" class="wide secondary">DELETE SELECTED OBJECT</button>
+   <div class="section-rule"></div><h3>QUICK SCRIPT EXAMPLE</h3><pre class="script-preview">:touch
+if flag power goto ready
+say Find the generator!
+end
+:ready
+say Access granted.
+give gems 1
+end</pre><p class="hint">Labels: :touch, :tick, :shot. Commands: say, set, clear, if, goto, give, take, counter, move, teleport, wait, play, damage, heal, win, end.</p>
+  </section>
+  <section class="pane" id="pane-manual" hidden><div class="pane-kicker">REFERENCE / V0.1</div><h2>QUICK MANUAL</h2><h3>THE CONCEPT</h3><p>Classic text-mode game creation evolved beyond the 80×25 VGA screen. GlyphDOS uses a software canvas so you can build boards of different sizes, mix Unicode with DOS characters, and script interactive objects.</p>
+   <h3>CREATE A GAME</h3><ol><li>Choose Board Editor and paint terrain, overlays, or objects.</li><li>Choose Glyph Studio to choose or draw characters.</li><li>Select an object and edit its :touch script.</li><li>Switch to Play to test your game.</li><li>Export your world JSON; import to continue editing.</li></ol>
+   <h3>CONTROLS</h3><p>WASD/arrows to move, E to interact, Space to shoot. In the editor, click/drag to paint and right-click to erase. Custom glyphs begin with <code>@bank:slot</code>.</p>
+   <h3>LIMITS</h3><p>Board maximum: 200×120; 128 boards/world; 500,000 cells/world; 4,096 authored bitmap glyphs/world. The current runtime uses one on-screen viewport of 60×25 tiles and a fixed-step ticker.</p>
+   <h3>INTEROPERABILITY</h3><p>This is an original engine inspired by ZZT and MegaZeux. Its scripting and JSON world file are <strong>not binary-compatible</strong> with .ZZT, .MZX, or Robotic programs.</p>
+  </section>
+ </aside>
+</section>
+<footer class="footer"><span>GLYPHDOS <b>0.1</b> · HTML5 CANVAS ENGINE · ZERO DEPENDENCIES</span><span>60×25 VIEWPORT / MULTI-BOARD WORLDS / CP437 + UNICODE + CUSTOM BITMAPS</span></footer>
+</div>
+<script src="src/charset.js"></script><script src="src/data.js"></script><script src="src/engine.js"></script><script src="src/app.js"></script>
+</body></html>

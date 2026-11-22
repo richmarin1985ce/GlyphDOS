@@ -54,3 +54,4 @@ Run with a browser: open `index.html` directly or host this directory with any s
 - **Games you make with GlyphDOS remain yours.** The engine's licenses do not automatically apply to user-created games or assets.
 
 GlyphDOS is an independent original engine and does not copy MegaZeux or ZZT source code, assets, or worlds. These names identify historical inspirations, not endorsement or affiliation.
+
